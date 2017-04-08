@@ -3,7 +3,7 @@
 
 typedef struct nodo
 {
-	
+
  float dado;
  int lin, col;
  struct nodo *prox;
@@ -16,7 +16,7 @@ Matriz_Esparsa* Criar_Nodo() //1 alocaçao de memoria
    v = (Matriz_Esparsa*) malloc(sizeof(Matriz_Esparsa));
 
    	if(!v){
-		prinf("\nErro na alocacao");
+		printf("\nErro na alocacao");
 			exit(0);
   }
   return v;
@@ -24,7 +24,7 @@ Matriz_Esparsa* Criar_Nodo() //1 alocaçao de memoria
 
 void nodo_col_lin (Matriz_Esparsa *p)
 {
-	
+
 }
 
 void insere(Matriz_Esparsa) // 2
@@ -33,12 +33,12 @@ void insere(Matriz_Esparsa) // 2
 }
 void busca(Matriz_Esparsa *v , int *prox) //3busca
 {
-		Matriz_Esparsa *p;
-		for(p=v; p!=NULL; p=p->prox){
-			if(p->infor ==v)
-			 return p;
-	}
-	return NULL;
+	//	Matriz_Esparsa *p;
+	//	for(p=v; p!=NULL; p=p->prox){
+	//		if(p->infor ==v)
+	//		 return p;
+	//}
+	//return NULL;
 }
 void libera_memoria(nodo* v) //4liberar memoria
 {
@@ -51,21 +51,22 @@ void libera_memoria(nodo* v) //4liberar memoria
 }
 void inseri_lista(Matriz_Esparsa *v)
 {
+    int lin;
 	printf("\nInseri numero de linhas e colunas");
-	  //while(<lin) ou um for{
+	  //while(lin) ou um for{
 	printf("\nInseri numero de linhas : \n");
-	scanf("%d", lin[]);
+	scanf("%d", lin);
  }
-	
+
 
 void soma() //arruma
 {
-    int i;
+  //  int i;
       /* pra cada elemento da matriz */
-    for (i = 0; i < lin[] * col[] ; i++) {
+   // for (i = 0; i < lin * col[] ; i++) {
           /* soma valor se elemento Ã© nao-nulo */
        // if (* (s.sp + i) != 0)  * (s.sp + i) = (* (s.sp + i)+ constante);///
-}
+//}
 }
 
 void subtrai()
@@ -85,8 +86,6 @@ void imprime_diagonais()
 {
 }
 
-}
-
 main()//
 {
 	int lin,col;
@@ -94,10 +93,10 @@ main()//
 	printf("\n Escolha uma opcao:");
 		printf("\n 1-Iniciar");
 		printf("\n 2-Sair");
-		printf("\n 3-Opcao : ");	
+		printf("\n 3-Opcao : ");
 		printf("Opcao :");scanf("%d", &opc);
 			return opc;
-			
+
 				switch(opc)
 	{
 	case 1:
@@ -106,11 +105,11 @@ main()//
 	printf("\nDigite numero de coluna :");
 	scanf("%d", &col);
 	break;
-	
+
 	case 2:
-	
+
 	default:
-	
+
 		printf("\nComando invalido\n\n");
 	}
 	return lin;
