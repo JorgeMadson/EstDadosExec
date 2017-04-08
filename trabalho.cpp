@@ -25,7 +25,7 @@ Matriz_Esparsa* Cria_Nodo()
 			}			
 		return prox;
 }
-
+//Modificação
 
 float busca_lista(Matriz_Esparsa **N, int li, int co)
 	{
