@@ -8,44 +8,26 @@ typedef struct nodo
     int lin, col;
     struct nodo *prox;
 } matriz_Esparsa;
-
 ///Busca o valor do elemento;
 float Busca_valor(matriz_Esparsa *matriz, int lin, int col)
 {
     matriz_Esparsa *aux;
     ///A partir da matriz matriz, percorrendo cada nodo da lista,
-    /// retorne o valor daquela linha e coluna espec�fica
+    /// retorne o valor daquela linha e coluna especÃ­fica
     for(aux = matriz; aux != NULL; aux = aux->prox)
         if(aux->lin==lin&&aux->col==col)
             return aux->dado;
     return 0;
 }
-
-///Pega a matriz matriz1 ou 2, que � global, e mostra ela.
+///Pega a matriz matriz1 ou 2, que Ã© global, e mostra ela.
 void MostrarMatriz(matriz_Esparsa *matriz, int linhas, int colunas, int qualMatriz)
 {
-<<<<<<< HEAD
-    int l,c,i,j;
-        for (i = 0; i < linhas; i++){
-        for (j = 0; j < colunas; j++){
-            if (m->lin == i && m->col == j){
-                printf("  \t%0.2f   ", m->dado);
-            }
-            else{
-                printf("  \t%0.2f   ", 0.0F);
-            }
-        }
-        printf("\n");
-    }
-    printf("\nSua matriz ficou assim:\n");
-=======
     int l,c;
     float valor;
     if(matriz == NULL)
         printf("Erro, matriz vazia.\n");
 
     printf("\nA matriz %d ficou assim:\n",qualMatriz);
->>>>>>> c52410aa28db428cda6e92480c0918c11d82fce1
     for(l=0; l<linhas; l++)
     {
         for(c=0; c<colunas; c++)
@@ -56,14 +38,12 @@ void MostrarMatriz(matriz_Esparsa *matriz, int linhas, int colunas, int qualMatr
         printf("\n");
     }
 }
-
 ///Aqui faz um nodo nulo
-//**N � o endere�o de mem�ria do ponteiro da matriz
+//**N Ã© o endereÃ§o de memÃ³ria do ponteiro da matriz
 void inicializar_matriz(matriz_Esparsa **N)
 {
     *N = NULL;
 }
-
 matriz_Esparsa* Aloca_Matriz()
 {
     ///Faz uma matriz com nome prox
@@ -78,7 +58,6 @@ matriz_Esparsa* Aloca_Matriz()
     }
     return prox;
 }
-
 float busca_lista(matriz_Esparsa **N, int li, int co)
 {
     matriz_Esparsa *axs;
@@ -101,7 +80,6 @@ float busca_lista(matriz_Esparsa **N, int li, int co)
         }
     }
 }
-
 void libera_memoria(matriz_Esparsa **N)
 {
     matriz_Esparsa *p = *N, *axs;
@@ -112,7 +90,6 @@ void libera_memoria(matriz_Esparsa **N)
     }
     inicializar_matriz(N);
 }
-
 void insere(matriz_Esparsa **N, float dado, int li, int co)
 {
     ///Matrizes auxiliares
@@ -120,20 +97,20 @@ void insere(matriz_Esparsa **N, float dado, int li, int co)
 
     //Retorna um vetor alocado dinamicamente do tipo 'matriz_Esparsa'
     novo = Aloca_Matriz();
-    //Esse nodo recebe os valores dado pelos parametros desta fun��o
+    //Esse nodo recebe os valores dado pelos parametros desta funÃ§Ã£o
     novo-> dado=dado;
     novo->lin = li;
     novo->col = co;
     novo->prox = NULL;
 
-    //At� esse ponto novo est� o valor de UM elemento da matriz
+    //AtÃ© esse ponto novo estÃ¡ o valor de UM elemento da matriz
 
-    //Se o nodo for nulo, ela � o primeiro elemento da matriz
+    //Se o nodo for nulo, ela Ã© o primeiro elemento da matriz
     if(*N == NULL)
     {
         *N = novo;
     }
-    //Caso contr�rio, enqnt o valor de prox n�o for NULL
+    //Caso contrÃ¡rio, enqnt o valor de prox nÃ£o for NULL
     else
     {
         axs = *N;
@@ -144,12 +121,11 @@ void insere(matriz_Esparsa **N, float dado, int li, int co)
         axs->prox = novo;
     }
 }
-
 void Le_dado(matriz_Esparsa **matriz,  int *li, int *co)
 {
     int numLinhas = *li;
     int numColunas = *co;
-    ///� uma matriz auxiliar
+    ///Ã‰ uma matriz auxiliar
     //matriz_Esparsa *matriz;
     int g,h;
     float valorInseridoPeloUsuario;
@@ -161,7 +137,7 @@ void Le_dado(matriz_Esparsa **matriz,  int *li, int *co)
 
     printf("\nDigite quantidade de coluna: ");
     scanf("%d", &numColunas);
-    //O conte�do de li,co(variaveis globais de linha e coluna) � atualizado aqui
+    //O conteÃºdo de li,co(variaveis globais de linha e coluna) Ã© atualizado aqui
     *li=numLinhas;
     *co=numColunas;
     for(g=0; g<numLinhas; g++)
@@ -170,21 +146,14 @@ void Le_dado(matriz_Esparsa **matriz,  int *li, int *co)
         {
             system("cls");
             printf("\nDigite o elemento [%d,%d] para insercao: ",g+1,h+1);
-<<<<<<< HEAD
-            scanf("%f",&s);
-           //mostrarMatriz(m,li,co);
-            if(s!=0)
-=======
             scanf("%f",&valorInseridoPeloUsuario);
             if(valorInseridoPeloUsuario!='\n')
->>>>>>> c52410aa28db428cda6e92480c0918c11d82fce1
             {
                 insere(matriz, valorInseridoPeloUsuario, g, h);
             }
         }
     }
 }
-
 void Soma_subitracaoMatriz(matriz_Esparsa *m1, matriz_Esparsa *m2, int lin, int col, int operacao)
 {
     int i,j;
@@ -205,6 +174,70 @@ void Soma_subitracaoMatriz(matriz_Esparsa *m1, matriz_Esparsa *m2, int lin, int 
         printf("\n");
     }
 }
+void multi_Matriz(matriz_Esparsa *m1, matriz_Esparsa *m2, int lin, int col, int operacao)
+{
+	int i,j;
+	float valor1,valor2,valorResultado;
+		for(i=0; i<=lin-1; i++)
+		{
+			for(j=0; j<=col-1;j++)
+			{
+				valor1 = Busca_valor(m1, i, j);
+				valor2 = Busca_valor(m2, i, j);
+				valorResultado = valor1 * valor2;
+				printf("[%4.1f] ", valorResultado);
+			}
+			printf("\n");
+		}
+}
+void trans_Matriz(matriz_Esparsa *matriz, int lin, int col)
+{
+    matriz_Esparsa *aux;
+    int i, j;
+    float dado;
+        if(matriz==NULL)
+            printf("\nNao contem nada na lista, ela esta vazia!!!!");
+            else
+                {
+                aux = matriz;
+                for(j=0; j<col; j++)
+                {
+                    for(i=0; i<lin; i++)
+                    {
+                        dado = Busca_valor(matriz, i, j);
+                        printf("[%4.1f] ", dado);
+                    }
+                    printf("\n");
+                }
+            }
+}
+void diagonal_Matriz(matriz_Esparsa *m, int lin, int col)
+{
+	matriz_Esparsa *m1;
+	int i, j;	
+	float dado;
+		if(m==NULL)
+			printf("\nNao contem nada na lista, ela esta vazia!!!!");
+			else{
+				m1 = m;
+					for(i=0; i<=lin-1; i++)
+					{
+						for(j=0; j<=col-1; j++)
+						{
+							if(j==i)
+							{
+								dado = Busca_valor(m,i, j);
+								printf("%4.1f", dado);
+							}
+							else{
+								printf("");
+							}
+							printf("\n");
+							}
+						}
+					}
+			}
+		
 
 int main()
 {
@@ -226,10 +259,6 @@ int main()
     switch(opc)
     {
     case 1:
-<<<<<<< HEAD
-        le_dado(m);
-        //mostrarMatriz(m);
-=======
         system("cls");
         printf("\nInsira os valores da primeira matriz\n");
         Le_dado(&matriz1, &lin, &col);
@@ -260,8 +289,9 @@ int main()
             }
             else
                 printf("Nao e possivel somar matrizes com linhas e/ou colunas diferentes.");
-            break;
-        
+           return opc2;
+		   break;
+    
         case 2: 
         	if(lin==lin2&&col==col2)
         	{
@@ -270,17 +300,42 @@ int main()
 			else
                 printf("Nao e possivel somar matrizes com linhas e/ou colunas diferentes.");
             break;
+    	case 3 : 
+        	if(lin==lin2&&col==col2)
+        	{
+        		printf("Multiplicacao e : \n");
+        		multi_Matriz(matriz1,matriz2,lin,col,1);
+			}
+		break;
+		case 4 :
+			
+			if(lin==lin2&&col==col2)
+				{printf("Matriz 1 Transposta  : \n");
+				trans_Matriz(matriz1,lin,col);
+				printf("Matriz 2 Transposta : \n");
+				trans_Matriz(matriz2,lin,col);
+			}
+			break;
+		case 5:
+			if(lin==lin2&&col==col2)
+			{
+			printf("\nDiagonal Matriz 1 : \n");
+			diagonal_Matriz(matriz1,lin,col);
+			printf("\nDiagonal Matriz 2 : \n");
+			diagonal_Matriz(matriz2,lin,col);	
+			}
+		break;	
         default:
         	printf("\nOpcao invalida\n");
         	break;
 		}
         scanf("%d");
->>>>>>> c52410aa28db428cda6e92480c0918c11d82fce1
         break;
-
-    case 2:
+		return ;
+    case 2 :
     default:
         printf("\nAte a proxima.\n\n");
         break;
-    }
-}
+    } 
+    
+} 
