@@ -13,7 +13,18 @@ typedef struct nodo
 
 void mostrarMatriz(Matriz_Esparsa *m, int linhas,int colunas)
 {
-    int l,c;
+    int l,c,i,j;
+        for (i = 0; i < linhas; i++){
+        for (j = 0; j < colunas; j++){
+            if (m->lin == i && m->col == j){
+                printf("  \t%0.2f   ", m->dado);
+            }
+            else{
+                printf("  \t%0.2f   ", 0.0F);
+            }
+        }
+        printf("\n");
+    }
     printf("\nSua matriz ficou assim:\n");
     for(l=0; l<linhas; l++)
     {
@@ -144,6 +155,7 @@ void le_dado(Matriz_Esparsa *m)
             system("cls");
             printf("\nDigite o elemento [%d,%d] para insercao: ",g+1,h+1);
             scanf("%f",&s);
+           //mostrarMatriz(m,li,co);
             if(s!=0)
             {
                 ///Cria uma matriz do tamanho desejado com malloc
@@ -184,6 +196,7 @@ int main()
     {
     case 1:
         le_dado(m);
+        //mostrarMatriz(m);
         break;
 
     case 2:
