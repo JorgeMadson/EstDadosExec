@@ -2,33 +2,49 @@
 #include <stdlib.h>
 #include <locale.h>
 
-int linhaGlobal,colunaGlobal;
-
 typedef struct nodo
 {
     float dado;
     int lin, col;
     struct nodo *prox;
-} Matriz_Esparsa;
+} matriz_Esparsa;
 
-void mostrarMatriz(Matriz_Esparsa *m, int linhas,int colunas)
+///Busca o valor do elemento;
+float busca_valor(matriz_Esparsa *matriz1, int lin, int col)
+{
+    matriz_Esparsa *aux;
+    ///A partir da matriz matriz1, percorrendo cada nodo da lista,
+	/// retorne o valor daquela linha e coluna específica
+    for(aux = matriz1; aux != NULL; aux = aux->prox)
+        if(aux->lin==lin&&aux->col==col)
+            return aux->dado;
+    return 0;
+}
+
+///Pega a matriz matriz1, que é global, e mostra ela.
+void mostrarMatriz(matriz_Esparsa *matriz1, int linhas, int colunas)
 {
     int l,c;
+    float valor;
+    if(matriz1 == NULL)
+    printf("Erro, matriz vazia.\n");
+
     printf("\nSua matriz ficou assim:\n");
     for(l=0; l<linhas; l++)
     {
         for(c=0; c<colunas; c++)
         {
-        printf("[%.2f] ",m[l+c].dado);
+        	valor=busca_valor(matriz1,l,c);
+        	printf("[%.2f] ",valor);
         }
         printf("\n");
     }
 }
 
 
-void imprime_matriz(Matriz_Esparsa *N)
+void imprime_matriz(matriz_Esparsa *N)
 {
-    Matriz_Esparsa *axs;
+    matriz_Esparsa *axs;
 
     if(N == NULL)
     {
@@ -42,18 +58,20 @@ void imprime_matriz(Matriz_Esparsa *N)
 }
 
 
-///Aqui faz UM nodo
-void inicializar_matriz(Matriz_Esparsa **N)
+///Aqui faz um nodo nulo
+//**N é o endereço de memória do ponteiro da matriz
+void inicializar_matriz(matriz_Esparsa **N)
 {
     *N = NULL;
 }
-Matriz_Esparsa* Cria_Nodo()
+
+matriz_Esparsa* Aloca_Matriz()
 {
     ///Faz uma matriz com nome prox
-    Matriz_Esparsa *prox;
+    matriz_Esparsa *prox;
     ///Se for [2x2]
     ///prox[4];
-    prox = (Matriz_Esparsa*) malloc(sizeof(Matriz_Esparsa));
+    prox = (matriz_Esparsa*) malloc(sizeof(matriz_Esparsa));
     if(!prox)
     {
         printf("\nErro de alocacao");
@@ -62,9 +80,9 @@ Matriz_Esparsa* Cria_Nodo()
     return prox;
 }
 
-float busca_lista(Matriz_Esparsa **N, int li, int co)
+float busca_lista(matriz_Esparsa **N, int li, int co)
 {
-    Matriz_Esparsa *axs;
+    matriz_Esparsa *axs;
     if(*N!=NULL)
     {
         while((axs->lin != li)&&(axs->col != co)||(axs->prox!=NULL))
@@ -85,9 +103,9 @@ float busca_lista(Matriz_Esparsa **N, int li, int co)
     }
 }
 
-void libera_memoria(Matriz_Esparsa **N)
+void libera_memoria(matriz_Esparsa **N)
 {
-    Matriz_Esparsa *p = *N, *axs;
+    matriz_Esparsa *p = *N, *axs;
     while(p != NULL)
     {
         axs = p->prox;
@@ -96,20 +114,27 @@ void libera_memoria(Matriz_Esparsa **N)
     inicializar_matriz(N);
 }
 
-void insere(Matriz_Esparsa **N, float dado, int li, int co)
+void insere(matriz_Esparsa **N, float dado, int li, int co)
 {
+	///Matrizes auxiliares
+    matriz_Esparsa *novo, *axs;
 
-    Matriz_Esparsa *nv, *axs;
-
-    nv = Cria_Nodo();
-    nv-> dado=dado;
-    nv->lin = li;
-    nv->col = co;
-    nv->prox = NULL;
+	//Retorna um vetor alocado dinamicamente do tipo 'matriz_Esparsa'
+    novo = Aloca_Matriz();
+    //Esse nodo recebe os valores dado pelos parametros desta função
+    novo-> dado=dado;
+    novo->lin = li;
+    novo->col = co;
+    novo->prox = NULL;
+    
+    //Até esse ponto novo está o valor de UM elemento da matriz
+    
+    //Se o nodo for nulo, ela é o primeiro elemento da matriz
     if(*N == NULL)
     {
-        *N = nv;
+        *N = novo;
     }
+    //Caso contrário, enqnt o valor de prox não for NULL 
     else
     {
         axs = *N;
@@ -117,78 +142,68 @@ void insere(Matriz_Esparsa **N, float dado, int li, int co)
         {
             axs = axs -> prox;
         }
-        axs->prox = nv;
+        axs->prox = novo;
     }
 }
 
-void le_dado(Matriz_Esparsa *m)
+void Le_dado(matriz_Esparsa **matriz1,  int *li, int *co)
 {
+	int numLinhas = *li;
+	int numColunas = *co;
     ///É uma matriz auxiliar
-    Matriz_Esparsa *Nodo;
-    int li, co, g,h;
-    float s;
+    //matriz_Esparsa *matriz;
+    int g,h;
+    float valorInseridoPeloUsuario;
 
-    ///nv = é a matriz que recebe os dados do usuário
-    Matriz_Esparsa *nv;
-    ///m = Matriz que vem no parametro
-    Nodo = m;
-
+	//Quantidade de linhas e colunas que a matriz tem
     printf("\nDigite quantidade de linha: ");
-    scanf("%d", &li);
+    scanf("%d", &numLinhas);
     printf("\nDigite quantidade de coluna: ");
-    scanf("%d", &co);
-    for(g=0; g<li; g++)
+    scanf("%d", &numColunas);
+    for(g=0; g<numLinhas; g++)
     {
-        for(h=0; h<co; h++)
+        for(h=0; h<numColunas; h++)
         {
             system("cls");
             printf("\nDigite o elemento [%d,%d] para insercao: ",g+1,h+1);
-            scanf("%f",&s);
-            if(s!=0)
+            scanf("%f",&valorInseridoPeloUsuario);
+            if(valorInseridoPeloUsuario!='\n')
             {
-                ///Cria uma matriz do tamanho desejado com malloc
-                nv = Cria_Nodo();
-                ///Recebe o valor inserido pelo usuário
-                nv-> dado=s;
-                ///Recebe o valor da linha, começando de zero
-                nv->lin = g;
-                ///Recebe o valor da coluna, começando de zero
-                nv->col = h;
-                ///A matriz recebe NULO como o valor de prox
-                nv->prox = NULL;
-                ///Pasando os valores recebido para a matriz da main
-                m=nv;
-                //insere(&Nodo, s, li, co);
-                //imprime_matriz(m);
-                mostrarMatriz(m,li,co);
+                insere(matriz1, valorInseridoPeloUsuario, g, h);
+                //imprime_matriz(matriz1);
+                
             }
         }
     }
+    mostrarMatriz(*matriz1 ,numLinhas,numColunas);
 }
 
 int main()
 {
     float d;
     int i,j;
-    Matriz_Esparsa *m;
-    inicializar_matriz(&m);
+    matriz_Esparsa *matriz1,*matriz2;
+    //matriz1=NULL
+    inicializar_matriz(&matriz1);
     int lin,col;
     int opc;
+    printf("\n");
+    printf("Software de manipulacao de matrizes esparsas\n");
     printf("\n Escolha uma opcao:");
     printf("\n 1-Iniciar");
-    printf("\n 2-Sair");
+    printf("\n 2-Encerrar");
     printf("\nOpcao :");
     scanf("%d", &opc);
 
     switch(opc)
     {
     case 1:
-        le_dado(m);
+        Le_dado(&matriz1, &lin, &col);
         break;
 
     case 2:
     default:
-        printf("\nSaindo...\n\n");
+        printf("\nAte a proxima.\n\n");
         break;
     }
 
