@@ -19,7 +19,7 @@ float Busca_valor(matriz_Esparsa *matriz, int lin, int col)
             return aux->dado;
     return 0;
 }
-///Pega a matriz matriz1 ou 2, que Ã© global, e mostra ela.
+///Pega a matriz matriz1 ou 2, que é global, e mostra ela.
 void MostrarMatriz(matriz_Esparsa *matriz, int linhas, int colunas, int qualMatriz)
 {
     int l,c;
@@ -39,7 +39,7 @@ void MostrarMatriz(matriz_Esparsa *matriz, int linhas, int colunas, int qualMatr
     }
 }
 ///Aqui faz um nodo nulo
-//**N Ã© o endereÃ§o de memÃ³ria do ponteiro da matriz
+//**N é o endereço de memória do ponteiro da matriz
 void inicializar_matriz(matriz_Esparsa **N)
 {
     *N = NULL;
@@ -97,20 +97,20 @@ void insere(matriz_Esparsa **N, float dado, int li, int co)
  
     //Retorna um vetor alocado dinamicamente do tipo 'matriz_Esparsa'
     novo = Aloca_Matriz();
-    //Esse nodo recebe os valores dado pelos parametros desta funÃ§Ã£o
+    //Esse nodo recebe os valores dado pelos parametros desta função
     novo-> dado=dado;
     novo->lin = li;
     novo->col = co;
     novo->prox = NULL;
  
-    //AtÃ© esse ponto novo estÃ¡ o valor de UM elemento da matriz
+    //Até esse ponto novo tem o valor de UM elemento da matriz
  
-    //Se o nodo for nulo, ela Ã© o primeiro elemento da matriz
+    //Se o nodo for nulo, ela é o primeiro elemento da matriz
     if(*N == NULL)
     {
         *N = novo;
     }
-    //Caso contrÃ¡rio, enqnt o valor de prox nÃ£o for NULL
+    //Caso contrário, enqnt o valor de prox não for NULL
     else
     {
         axs = *N;
@@ -125,12 +125,12 @@ void Le_dado(matriz_Esparsa **matriz,  int *li, int *co,int matrizGrande)
 {
     int numLinhas = *li;
     int numColunas = *co;
-    ///Ã‰ uma matriz auxiliar
+    ///É uma matriz auxiliar
     //matriz_Esparsa *matriz;
     int g,h;
     float valorInseridoPeloUsuario;
  
-    //O conteÃºdo de li,co(variaveis globais de linha e coluna) Ã© atualizado aqui
+    //O conteúdo de li,co(variaveis globais de linha e coluna) é atualizado aqui
     *li=numLinhas;
     *co=numColunas;
     if(matrizGrande==99)
