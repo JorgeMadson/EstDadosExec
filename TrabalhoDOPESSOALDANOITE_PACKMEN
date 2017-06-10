@@ -1,0 +1,388 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <ctype.h>
+#include <windows.h>
+#include <conio.h>
+#include <unistd.h>
+
+//definicoes para o desenho do mapa
+#define tLab 30
+#define livre 0
+#define parede 1
+#define visitado 2
+#define beco 3
+
+#define cornum 12
+#define branco 15
+
+//ESTRUTURAS
+typedef struct Nodo_Pilha
+{
+    int num;
+    struct Nodo_Pilha *prox;
+}NODOPTR;
+
+//MAPA
+int mapa[tLab][tLab];
+int passos = 0;
+
+//CORES
+int xc[] = {14, 13, 12, 10, 11, 12};
+int yc[] = {13, 14, 10, 12, 12, 11};
+int cor;
+
+
+void SetColor(int ForgC)
+{
+     WORD wColor;
+
+     HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+     CONSOLE_SCREEN_BUFFER_INFO csbi;
+     if(GetConsoleScreenBufferInfo(hStdOut, &csbi))
+     {
+          wColor = (csbi.wAttributes & 0xF0) + (ForgC & 0x0F);
+          SetConsoleTextAttribute(hStdOut, wColor);
+     }
+     return;
+}
+
+void escolheCor()
+{
+    cor = rand() % 6;
+}
+
+void inicializaPilha(NODOPTR **pilha)
+{
+   *pilha=NULL;
+}
+
+NODOPTR * CriaNodo()
+{
+    NODOPTR *p;
+
+    p = (NODOPTR *) malloc(sizeof(struct Nodo_Pilha));
+    if(!p)
+    {
+        printf("Problema na alocação!");
+        exit(0);
+    }
+    return p;
+}
+
+int push(int dado, NODOPTR **N)
+{
+    NODOPTR *nodo;
+
+    nodo = CriaNodo();
+    nodo -> num = dado;
+    nodo -> prox = *N;
+    *N = nodo;
+}
+
+int pop(int dado, NODOPTR **N)
+{
+    NODOPTR *nodo;
+
+    if(*N == NULL)
+    {
+        printf("!");
+        return -1;
+    }
+    nodo = *N;
+    dado = nodo -> num;
+    *N = nodo -> prox;
+    free(nodo);
+}
+
+int stackpop(NODOPTR **N)
+{
+    int topo;
+
+    if (*N == NULL)
+    {
+        printf("!");
+        return -1;
+    }
+    else
+    {
+        topo = (*N) -> num;
+        return topo;
+    }
+}
+
+int montaLabirinto()
+{
+    int i, j, z;
+
+    for(i=0;i<tLab;i++)
+    {
+        for(j=0;j<tLab;j++)
+        {
+            //cria o labirinto
+            z = rand() % 3;
+            if(z == 0)
+                mapa[i][j] = parede;
+            else
+                mapa[i][j] = livre;
+
+            //bordas do labirinto recebem parede
+            mapa[i][0] = parede;
+            mapa[i][tLab-1] = parede;
+            mapa[0][j] = parede;
+            mapa[tLab-1][j] = parede;
+        }
+    }
+}
+
+int montaPosicao(int x, int y)
+{
+    return ((x*100)+y);
+}
+
+int criaSaida(int *xsaida, int *ysaida)
+{
+    int lincol, lado, esqdir, supinf, pos;
+
+    lincol = rand() % 2;             //escolhe linha ou coluna
+    if(lincol == 0)                  //saida na linha
+    {
+        lado = rand() % 2;         //escolhe linha superior ou inferior
+        if(lado == 0)              //saida na linha superior
+        {
+            do
+                supinf = rand() % (tLab-1);
+            while ((supinf == 0 || mapa[1][supinf] == parede));
+            mapa[0][supinf] = livre;
+            *xsaida = 0;
+            *ysaida = supinf;
+        }
+        else                    //saida na linha inferior
+        {
+            do
+                supinf = rand() % tLab-1;
+            while ((supinf == 0 || mapa[tLab-2][supinf] == parede));
+            mapa[tLab-1][supinf] = livre;
+            *xsaida = tLab-1;
+            *ysaida = supinf;
+        }
+    }
+    else                        //saida na coluna
+    {
+        lado = rand() % 2;         //escolhe coluna esquerda ou direita
+        if(lado == 0)              //saida na coluna esquerda
+        {
+            do
+                esqdir = rand() % tLab-1;
+            while ((esqdir == 0 || mapa[esqdir][1] == parede));
+            mapa[esqdir][0] = livre;
+            *xsaida = esqdir;
+            *ysaida = 0;
+        }
+        else                    //saida na coluna direita
+        {
+            do
+                esqdir = rand() % tLab-1;
+            while ((esqdir == 0 || mapa[esqdir][tLab-2] == parede));
+            mapa[esqdir][tLab-1] = livre;
+            *xsaida = esqdir;
+            *ysaida = tLab-1;
+        }
+    }
+}
+
+int desenhaLabirinto(int x, int y)
+{
+    int i, j;
+
+    printf("\n\n");
+    for(i=0;i<tLab;i++)
+    {
+        printf("\t");
+        for(j=0;j<tLab;j++)
+        {
+            if((i==x)&&(j==y))
+            {
+                SetColor(xc[cor]);
+                printf("~@>");      //~~(*:>
+            }
+            else
+                if(mapa[i][j] == visitado)
+                {
+                    SetColor(xc[cor]);
+                    printf(" . ");
+                }
+                else if(mapa[i][j] == livre)
+                    printf("   ");
+                else if(mapa[i][j] == parede)
+                    {
+                        SetColor(yc[cor]);
+                        printf("%c%c%c", 219, 219, 219);
+                    }
+                    else
+                    {
+                        SetColor(yc[cor]);
+                        printf("%c%c%c", 176, 176, 176);
+                    }
+        }
+        printf("\n");
+    }
+    SetColor(branco);
+}
+
+int criaRato(int *xa, int *ya)     //define a posição inicial do rato
+{
+    do
+    {
+        *xa = rand() % (tLab-1);
+        *ya = rand() % (tLab-1);
+    }
+    while (mapa[*xa][*ya] == parede);
+}
+
+
+int desmontaPosicao(int pos, int *y)
+{
+    int x = pos / 100;
+    *y = pos % 100;
+    return x;
+}
+
+int imprimeLabirinto()
+{
+    int i, j;
+
+    for(i=0;i<tLab;i++)
+    {
+        printf("\t");
+        for(j=0;j<tLab;j++)
+            printf(" %d ", mapa[i][j]);
+        printf("\n");
+    }
+}
+
+void pilhaVazia(int x, int y, NODOPTR **N)
+{
+    if(*N == NULL)
+    {
+        system("cls");
+        SetColor(branco);
+        printf("\n\tO rato nao conseguiu encontrar a saida. Ele deu");
+        SetColor(cornum);
+        printf(" %d ", passos--);
+        SetColor(branco);
+        printf("passos.\n");
+        desenhaLabirinto(x, y);
+        system("pause");
+        exit(0);
+    }
+    else
+        return;
+}
+
+
+void alcancouSaida(int pos1, int pos2)
+{
+    int xrat, yrat;
+
+    if (pos1 == pos2)
+    {
+        system("cls");
+        SetColor(branco);
+        printf("\n\tSucesso! O rato achou a saida com");
+        SetColor(cornum);
+        printf(" %d ", passos);
+        SetColor(branco);
+        printf("passos!");
+        xrat = desmontaPosicao(pos1, &yrat);
+        desenhaLabirinto(xrat, yrat);
+        system("pause");
+        exit(0);
+    }
+    else
+        return;
+}
+
+void moveRato(int *inirato, int *posisaida, NODOPTR **pilha)
+{
+    int xrr, yrr, xss, yss, x, i, y;
+    int posirato = *inirato;
+
+    xrr = desmontaPosicao(posirato, &yrr);
+    xss = desmontaPosicao(*posisaida, &yss);
+    for(;;)
+    {
+        system("cls");
+
+        SetColor(branco);
+
+        if((mapa[xrr-1][yrr] != parede) && (mapa[xrr-1][yrr] != visitado) && (mapa[xrr-1][yrr] != beco))    //CIMA
+        {
+            mapa[xrr][yrr] = visitado;
+            posirato = montaPosicao(xrr-1, yrr);
+            push(posirato, pilha);
+        }
+        else if((mapa[xrr][yrr+1] != parede) && (mapa[xrr][yrr+1] != visitado) && (mapa[xrr][yrr+1] != beco))    //DIREITA
+        {
+            mapa[xrr][yrr] = visitado;
+            posirato = montaPosicao(xrr, yrr+1);
+            push(posirato, pilha);
+        }
+        else if((mapa[xrr+1][yrr] != parede) && (mapa[xrr+1][yrr] != visitado) && (mapa[xrr+1][yrr] != beco))    //BAIXO
+        {
+            mapa[xrr][yrr] = visitado;
+            posirato = montaPosicao(xrr+1, yrr);
+            push(posirato, pilha);
+        }
+        else if((mapa[xrr][yrr-1] != parede) && (mapa[xrr][yrr-1] != visitado) && (mapa[xrr][yrr-1] != beco))    //ESQUERDA
+        {
+            mapa[xrr][yrr] = visitado;
+            posirato = montaPosicao(xrr, yrr-1);
+            push(posirato, pilha);
+        }
+        else //se é beco
+        {
+            mapa[xrr][yrr] = beco;
+            pop(posirato, pilha);
+            pilhaVazia(xrr, yrr, pilha);
+            posirato = stackpop(pilha);
+        }
+        xrr = desmontaPosicao(posirato, &yrr);
+        SetColor(branco);
+        printf("\n\tPosicao do rato:\tSaida:\t\tPassos dados:\n");
+        SetColor(cornum);
+        printf("\t(%d,%d)\t\t\t(%d,%d)\t\t%d", xrr, yrr, xss, yss, ++passos);
+        desenhaLabirinto(xrr, yrr);
+        Sleep(50);
+        alcancouSaida(posirato, *posisaida);
+        //pilhaVazia(xrato, yrato, pilha);
+    }
+}
+
+int main()
+{
+    NODOPTR *pilha;
+    int xr, yr, posrato, xs, ys, possaida;
+    char sn;
+
+    srand(time(NULL));
+    inicializaPilha(&pilha);
+    do
+    {
+        escolheCor();
+        montaLabirinto();
+        criaRato(&xr, &yr);
+        posrato = montaPosicao(xr, yr);
+        criaSaida(&xs, &ys);
+        possaida = montaPosicao(xs, ys);
+        SetColor(branco);
+        printf("\n\tDeseja usar este labirinto? (s/n)\n");
+        desenhaLabirinto(xr, yr);
+        sn = getch();
+        sn = toupper(sn);
+        system("cls");
+    }
+    while (sn != 'S');
+    push(posrato, &pilha);
+    moveRato(&posrato, &possaida, &pilha);
+}
