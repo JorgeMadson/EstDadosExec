@@ -1,0 +1,254 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <windows.h>
+#include <conio.h>
+
+typedef struct fila{
+    char nome[30], origem[30], destino[30];
+    int passageiros, senha;
+    struct fila *prox;
+}aero;
+
+void gotoxy(int x, int y){
+     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),(COORD){x-1,y-1});
+}
+
+aero* nodo()//aloca nodo e como é inserção no fim, sempre o novo->prox será NULL
+{
+    aero *novo;
+    novo = malloc(sizeof(struct fila));
+    novo->prox = NULL;
+    return novo;
+}
+
+void inicialisa(aero **fila)
+{
+    *fila = NULL;
+}
+
+void fila(aero **fila)
+{
+    aero *aux;
+    aux = *fila;
+    while(aux != NULL)
+    {
+        *fila = aux->prox;
+        free(aux);
+        aux = *fila;
+    }
+    free(*fila);
+}
+
+void inserirno(aero **fila)
+{
+    aero *novo, *aux;
+    novo = nodo();
+    printf("insira dados do aviao:\nnome:");
+    gets(novo->nome);
+    fflush(stdin);
+    printf("\nQual e a origem:");
+    gets(novo->origem);
+    fflush(stdin);
+    printf("\nQual e o destino:");
+    gets(novo->destino);
+    fflush(stdin);
+    printf("\nQuantidade de passageiros:");
+    scanf("%d",&(novo->passageiros));
+    fflush(stdin);
+    novo->prox = NULL;
+    aux = *fila;
+    if(*fila == NULL)
+    {
+        *fila = novo;
+    }else
+    {
+        while(aux->prox != NULL)
+        {
+            aux = aux->prox;
+        }
+        aux->prox = novo;
+    }
+
+}
+
+void nomes(aero *inicio)
+{
+    int i;
+    i=1;
+    if( inicio == NULL)
+    {
+        printf("\nNao contem itens na fila!\n");
+    }
+    else
+    {
+        while(inicio->prox != NULL)
+        {
+            printf("%d . ",i);
+            i++;
+            puts(inicio->nome);
+            inicio = inicio->prox;
+        }
+        printf("%d . ",i);
+        puts(inicio->nome);
+    }
+}
+
+void listadados(aero *fim)
+{
+    system("cls");
+    printf("\nDADOS\nNOME:%s\nORIGEM:%s\nDESTINO:%s\nNUMERO DE PASSAGEIROS:%d\n",fim->nome,fim->origem,fim->destino,fim->passageiros);
+}
+
+int espera (aero *inicio)
+{
+    int i;
+    i=1;
+    while(inicio->prox != NULL)
+    {
+        i++;
+        inicio = inicio->prox;
+    }
+    return i;
+}
+
+
+void removenoinicio(aero **inicio, int a)
+{
+    char confirma;
+    aero *aux;
+    listadados(*inicio);
+    printf("confirmar ");
+    if(a==1)//1=DECOLAGEM 2=POUSO
+        printf("a decolagem");
+    else
+        printf("o pouso");
+    printf(" desse aviao?(Y/N)");
+    scanf("%c",&confirma);
+    fflush(stdin);
+    if((confirma=='y')||(confirma=='Y'))
+    {
+       aux = (*inicio)->prox;
+       free(*inicio);
+       *inicio = aux;
+        anima(a);
+    }
+}
+
+void main()
+{
+    aero *iniciopouso, *iniciodecolagem;
+    int i=0, menu;
+    char linha[20];
+    while(i<2)
+    {
+        i=0;
+        inicialisa(&iniciodecolagem);
+        inicialisa(&iniciopouso);
+        while(i<1)
+        {
+            printf("\nMENU\n");
+            printf("(01) Listar o numero de avioes  para decolar.\n");
+            printf("(02) Listar o numero de avioes  para pousar.\n");
+            printf("(03) Autorizar a decolagem do primeiro avião na fila de decolagem.\n");
+            printf("(04) Autorizar o pouso do primeiro avião na fila de pouso.\n");
+            printf("(05) Adicionar um aviao na fila de espera para decolagem.\n");
+            printf("(06) Adicionar um aviao na fila de espera para pouso.\n");
+            printf("(07) Listar todos os avioes que estao na fila de espera para decolagem, por ordem de chegada.\n");
+            printf("(08) Listar todos os avioes que estao na fila de espera para pouso, por ordem de chegada.\n");
+            printf("(09) Listar as dados do primeiro aviao da fila, antes de autorizar a sua decolagem.\n");
+            printf("(10) Listar as dados do primeiro aviao da fila, antes de autorizar o seu pouso.\n");
+            printf("(11) Reiniciar.\n");
+            printf("(12) Sair.\n");
+            menu=33;
+            scanf("%d",&menu);
+            fflush(stdin);
+
+            switch(menu)
+            {
+                case 1://lista o numero decolagem
+                    system("cls");
+                    if(iniciodecolagem==NULL)
+                    {
+                        printf("Pista de decolagem esta vazia\n");
+                        break;
+                    }
+                    printf("Tem %d avioes na fila de espera para decolagem",espera(iniciodecolagem));
+                break;
+                case 2://lista o numero pouso
+                    system("cls");
+                    if(iniciopouso==NULL)
+                    {
+                        printf("FILA DE POUSO ESTA VAZIA!\n");
+                        break;
+                    }
+                    printf("Tem %d avioes na fila de espera para pouso",espera(iniciopouso));
+                break;
+                case 3://autoriza decolagem
+                    system("cls");
+                    if(iniciodecolagem==NULL)
+                    {
+                        printf("FILA DE DECOLAGEM VAZIA!\n");
+                        break;
+                    }
+                    removenoinicio(&iniciodecolagem,1);//a passagem do numero 1 é para indicar DECOLAGEM
+                break;
+                case 4://autoriza pouso
+                    system("cls");
+                    if(iniciopouso==NULL)
+                    {
+                        printf("FILA DE POUSO VAZIA!\n");
+                        break;
+                    }
+                    removenoinicio(&iniciopouso,2);//a passagem do numero 2 é para indicar POUSO
+                break;
+                case 5://add na lista de decolagem
+                    system("cls");
+                    inserirnofim(&iniciodecolagem);
+                break;
+                case 6://add na lista de pouso
+                    system("cls");
+                    inserirnofim(&iniciopouso);
+                break;
+                case 7://lista os nomes decolagem
+                    system("cls");
+                    listanomes(iniciodecolagem);
+                break;
+                case 8://lista os nomes pouso
+                    system("cls");
+                    listanomes(iniciopouso);
+                break;
+                case 9://lista os dados do primeiro da lista de decolagem
+                    system("cls");
+                    if(iniciodecolagem==NULL)
+                    {
+                        printf("\nFILA DE ESPERA DE DECOLAGEM VAZIA\n");
+                        break;
+                    }
+                    listadados(iniciodecolagem);
+                break;
+                case 10://lista os dados do primeiro da lista de pouso
+                    system("cls");
+                    if(iniciopouso==NULL)
+                    {
+                        printf("\nFILA DE ESPERA DE POUSO VAZIA\n");
+                        break;
+                    }
+                    listadados(iniciopouso);
+                break;
+                case 11://sair do laço while interno, resetando as filas sem sair do progama
+                    system("cls");
+                    i=1;
+                break;
+                case 12:
+                    i=2;//sair do laço while externo, liberando espaço alocado e saindo do progama
+                break;
+                default:
+                    system("cls");
+                    printf("\nEscolha invalida!\n");
+            }
+        }
+        freefila(&iniciopouso);
+        freefila(&iniciodecolagem);
+    }
+}
