@@ -1,0 +1,348 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <ctype.h>
+#include <windows.h>
+#include <conio.h>
+#include <unistd.h>
+
+
+#define mapa 30
+#define livre 0
+#define parede 1
+#define visitado 2
+#define beco 3
+
+
+typedef struct nodo
+{
+    int aux;
+    struct nodo *prox;
+}pilha;
+
+//MAPA
+int campo[mapa][mapa];
+int passo = 0;
+
+
+void inicializar(pilha **N)
+{
+    *N = NULL;
+}
+pilha* Aloca_pilha()
+{
+    ///Faz uma matriz com nome prox
+    pilha *prox;
+    ///Se for [2x2]
+    ///prox[4];
+    prox = (pilha*) malloc(sizeof(pilha));
+    if(!prox)
+    {
+        printf("\nErro de alocacao");
+        exit(0);
+    }
+    return prox;
+}
+
+int pula(int dado, pilha **N)
+{
+    pilha *nodo;
+
+    nodo = Aloca_pilha();
+    nodo -> aux = dado;
+    nodo -> prox = *N;
+    *N = nodo;
+}
+
+int tirar(int dado, pilha **N)
+{
+    pilha *nodo;
+
+    if(*N == NULL)
+    {
+        printf("!");
+        return -1;
+    }
+    nodo = *N;
+    dado = nodo -> aux;
+    *N = nodo -> prox;
+    free(nodo);
+}
+int implementa(pilha **N)
+{
+    int cima;
+
+    if (*N == NULL)
+    {
+        printf("!");
+        return -1;
+    }
+    else
+    {
+        cima = (*N) -> aux;
+        return cima;
+    }
+}
+
+int montaLabirinto()
+{
+    int i, j, a;
+
+    for(i=0;i<mapa;i++)
+    {
+        for(j=0;j<mapa;j++)
+        {
+            a = rand() % 3;
+            if(a == 0)
+                campo[i][j] = parede;
+            else
+                campo[i][j] = livre;
+
+            //bordas do labirinto recebem parede
+            campo[i][0] = parede;
+            campo[i][mapa-1] = parede;
+            campo[0][j] = parede;
+            campo[mapa-1][j] = parede;
+        }
+    }
+}
+int posicao(int x, int y)
+{
+    return ((x*100)+y);
+}
+
+int saida(int *x, int *v)
+{
+
+	int linh, lad, esq, sup, pos;
+	
+    linh = rand() % 2;             
+    if(linh == 0)                  
+    {
+        lad = rand() % 2;         
+        if(lad == 0)              
+        {
+            do
+             sup = rand() % (mapa-1);
+            while ((sup == 0 || campo[1][sup] == parede));
+            campo[0][sup] = livre;
+            *x = 0;
+            *v = sup;
+        }
+        else                    //saida na linha inferior
+        {
+            do
+                sup = rand() % mapa-1;
+            while ((sup == 0 || campo[mapa-2][sup] == parede));
+            campo[mapa][sup] = livre;
+            *x = mapa-1;
+            *v = sup;
+        }
+    }
+    else                        //saida na coluna
+    {
+        lad = rand() % 2;         //escolhe coluna esquerda ou direita
+        if(lad == 0)              //saida na coluna esquerda
+        {
+            do
+            esq = rand() % (mapa-1);
+            while ((esq == 0 || campo[esq][1] == parede));
+            campo[0][esq] = livre;
+            *x = 0;
+            *v = esq;
+        }
+        else                    //saida na coluna direita
+        {
+            do
+                esq = rand() % (mapa-1);
+            while ((esq == 0 || campo[esq][mapa-2] == parede));
+            campo[esq][mapa-1] = livre;
+            *x = esq;
+            *v = mapa-1;
+        }
+    }
+}
+
+int labirinto(int x, int y)
+{
+    int i, j;
+
+    printf("\n\n");
+    for(i=0;i<mapa;i++)
+    {
+        printf("\t");
+        for(j=0;j<mapa;j++)
+        {
+            if((i==x)&&(j==y))
+            {
+                printf("~@>");      
+            }
+            else
+                if(campo[i][j] == visitado)
+                {
+                    printf(" . ");
+                }
+                else if(campo[i][j] == livre)
+                    printf("   ");
+                else if(campo[i][j] == parede)
+                    {
+                        printf("%c%c%c", 219, 219, 219);
+                    }
+                    else
+                    {
+                        printf("%c%c%c", 176, 176, 176);
+                    }
+        }
+        printf("\n");
+  }  
+}
+
+int rato(int *a, int *b)     //define a posição inicial do rato
+{
+    do
+    {
+        *a = rand() % (mapa-1);
+        *b = rand() % (mapa-1);
+    }
+    while (campo[*a][*b] == parede);
+}
+
+
+int posicao(int p, int *y)
+{
+    int z;
+	z = p / 100;
+    *y = p % 100;
+    return z;
+}
+
+int imprimi()
+{
+    int i, j;
+
+    for(i=0;i<mapa;i++)
+    {
+        printf("\t");
+        for(j=0;j<mapa;j++)
+            printf(" %d ", campo[i][j]);
+        printf("\n");
+    }
+}
+
+void pilhaVazia(int x, int y, pilha **N)
+{
+    if(*N == NULL)
+    {
+        system("cls");
+        printf("\n\tO rato nao conseguiu encontrar a saida. Ele deu");
+ 		printf(" %d ", passo--);
+         printf("passos.\n");
+        labirinto(x, y);
+        system("pause");
+        exit(0);
+    }
+    else
+        return;
+}
+
+
+void saidas(int p, int q)
+{
+    int z,y;
+
+    if (p == q)
+    {
+        system("cls");
+        printf("\n\tSucesso! O rato achou a saida com");
+        printf(" %d ", passo);
+        printf("passos!");
+        z = posicao(p, &y);
+        labirinto(z, y);
+        system("pause");
+        exit(0);
+    }
+    else
+        return;
+}
+
+void move(int *ini, int *saida, pilha **pilha)
+{
+	int r, s, x , y, z, i, j;
+	int rato = *ini;
+
+    r = posicao(rato, &s);
+    x = posicao(*saida, &y);
+    for(;;)
+    {
+        system("cls");
+
+        if((campo[r-1][s] != parede) && (campo[r-1][s] != visitado) && (campo[r-1][s] != beco))    //CIMA
+        {
+            campo[r][s] = visitado;
+            rato = posicao(r-1, s);
+            pula(rato, pilha);
+        }
+        else if((campo[r][s+1] != parede) && (campo[r][s+1] != visitado) && (campo[r][s+1] != beco))    //DIREITA
+        {
+            campo[r][s] = visitado;
+            rato = posicao(r, s+1);
+            pula(rato, pilha);
+        }
+        else if((campo[r+1][s] != parede) && (campo[r+1][s] != visitado) && (campo[r+1][s] != beco))    //BAIXO
+        {
+            campo[r][s] = visitado;
+            rato = posicao(r+1, s);
+            pula(rato, pilha);
+        }
+        else if((campo[r][s-1] != parede) && (campo[r][s-1] != visitado) && (campo[r][s-1] != beco))    //ESQUERDA
+        {
+            campo[r][s] = visitado;
+            rato = posicao(r, s-1);
+            pula(rato, pilha);
+        }
+        else //se é beco
+        {
+            campo[r][s] = beco;
+            tirar(rato, pilha);
+            pilhaVazia(r, s, pilha);
+            rato = implementa(pilha);
+        }
+        r = posicao(rato, &r);
+
+        printf("\n\tPosicao do rato:\tSaida:\t\tPassos dados:\n");
+
+        printf("\t(%d,%d)\t\t\t(%d,%d)\t\t%d", r, s, x, y, ++passo);
+        labirinto(r, s);
+        Sleep(50);
+        saidas(rato, *saida);
+       
+    }
+}
+
+int main()
+{
+    pilha *pilha;
+	int x, y, pos, s, v, saidaa;
+	char aux;
+
+    srand(time(NULL));
+    inicializar(&pilha);
+    do
+    {
+        montaLabirinto();
+        rato(&x, &y);
+        aux = labirinto(x, y);
+        saida(&x, &y);
+        saidaa = posicao(s, v);
+        printf("\n\tDeseja iniar o labirinto? (s/n)\n");
+        labirinto(x, y);
+        aux = getch();
+        aux = toupper(aux);
+        system("cls");
+    }
+    
+    while (aux != 'S');
+    pula(pos, &pilha);
+    move(&pos, &saidaa, &pilha);
+}
+
