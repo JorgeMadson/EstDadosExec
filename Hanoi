@@ -1,0 +1,51 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+//define discos como globais
+//define 4 torres
+//fazer uma malloc
+//main
+
+void imprime(int *mat, int lin, int col, int ultNum)
+{
+    int i,j;
+    int a,esp;
+
+    for(j=col-1 ; j>=0 ; j--)
+    {
+    for(i=0; i < lin; i++)
+    {
+        esp = (ultNum - mat[col*i+j])/2;
+
+    for(i=0; i < esp ; i++)
+        printf(" ");
+    for( a=0; a < mat[col*i+j]; a++ )
+        printf("*");
+    for(a=0; a<esp; a++)
+            printf(" ");
+        printf("\t");
+        }
+    printf("\n");
+    }
+}
+
+
+void move(int *mat, int lin, int col, int ultNum, int filaOrig, int filaDesti)
+{
+  int O=col-1, D=col-1;
+
+  while(O >= 0 && mat[col*filaOrig+O] == 0)
+  {
+   O--;
+  }
+    if(O < 0)
+        O = 0;
+    while(D>=0 && mat[col*filaDesti+D]== 0)
+    {
+        D--;
+    }
+    mat[col*filaDesti+D+1] = mat[col*filaOrig+O];
+    mat[col*filaOrig+O]=0;
+
+    imprime(mat, lin, col, ultNum);
+}
