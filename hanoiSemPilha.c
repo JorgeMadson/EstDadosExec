@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 int numDiscos=8,pinoA=0,pinoB=0,pinoC=0,pinoD=0,op=0;
-void Hanoi4(int nDiscos, char origem, char intermed1, char intermed2, char dest)
+void HanoiRecursivo(int nDiscos, char origem, char intermed1, char intermed2, char dest)
 {
     // printf("ori:%c int1:%c int2:%c dest:%c\n", origem, intermed1, intermed2, dest);
    if ( nDiscos == 1 )
@@ -21,14 +21,14 @@ void Hanoi4(int nDiscos, char origem, char intermed1, char intermed2, char dest)
     else
     {
         //Movendo os dois discos de cima
-        Hanoi4(nDiscos - 2, origem, intermed2, dest, intermed1);
+        HanoiRecursivo(nDiscos - 2, origem, intermed2, dest, intermed1);
         printf("\nOperacao:%d %c  --> %c\n",++op,origem,intermed2);
         atualizarValorPino(origem,intermed2);
         printf("\nOperacao:%d %c  --> %c\n",++op,origem,dest);
         atualizarValorPino(origem,dest);
         printf("\nOperacao:%d %c  --> %c\n",++op,intermed2,dest);
         atualizarValorPino(intermed2,dest);
-        Hanoi4(nDiscos - 2, intermed1, origem, intermed2, dest);
+        HanoiRecursivo(nDiscos - 2, intermed1, origem, intermed2, dest);
      }
 }
 
@@ -39,7 +39,7 @@ int main()
     printf("Estado da torre:\n");
     printf("\tA\tB\tC\tD\n");
     printf("\t%d\t%d\t%d\t%d\n",pinoA,pinoB,pinoC,pinoD);
-    Hanoi4(numDiscos, 'A', 'B', 'C', 'D');
+    HanoiRecursivo(numDiscos, 'A', 'B', 'C', 'D');
 
     return 0;
 }
@@ -72,5 +72,3 @@ atualizarValorPino(int pino1, int pino2)
     printf("\n");
 
 }
-
-//https://stackoverflow.com/questions/3607161/towers-of-hanoi-with-k-pegs
